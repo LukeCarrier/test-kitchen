@@ -77,7 +77,12 @@ module Kitchen
           config[:root_path],
           File.basename(config[:script])
         )
-        code = powershell_shell? ? %{& "#{script}"} : sudo(script)
+
+        if powershell_shell?
+          code = %{& "#{script}"}
+        else
+          code = sudo("chmod +x #{script}") << " && " << sudo(script)
+        end
 
         wrap_shell_code(code)
       end
